@@ -12,6 +12,7 @@ export interface TracingFormat {
   startTime: string;
   endTime: string;
   duration: number;
+  validation: number;
   execution: {
     resolvers: {
       path: (string | number)[];
