@@ -102,7 +102,6 @@ export class TracingExtension<TContext = any>
         startTime: this.startWallTime.toISOString(),
         endTime: this.endWallTime.toISOString(),
         duration: durationHrTimeToNanos(this.duration),
-	validation: durationHrTimeToNanos(this.duration),
         execution: {
           resolvers: this.resolverCalls.map(resolverCall => {
             const startOffset = durationHrTimeToNanos(resolverCall.startOffset);
