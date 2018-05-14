@@ -115,7 +115,7 @@ export class TracingExtension<TContext = any>
       typeof this.duration === "undefined" ||
       typeof this.calcDuration === "undefined" ||
       typeof this.calcStartOffset === "undefined" ||
-      typeof this.executiontartOffset === "undefined" ||
+      typeof this.executionStartOffset === "undefined" ||
       typeof this.executionDuration === "undefined"
     ) {
       return;
