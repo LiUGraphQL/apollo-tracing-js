@@ -12,8 +12,12 @@ export interface TracingFormat {
   startTime: string;
   endTime: string;
   duration: number;
-  validation: number;
+  calculation: {
+    startOffset: number;
+    duration: number;
+  };
   execution: {
+    duration: number;
     resolvers: {
       path: (string | number)[];
       parentType: string;
@@ -40,6 +44,10 @@ export class TracingExtension<TContext = any>
   private endWallTime?: Date;
   private startHrTime?: HighResolutionTime;
   private duration?: HighResolutionTime;
+  private calcStartOffset?: HighResolutionTime;
+  private calcDuration?: HighResolutionTime;
+  private executionStartOffset?: HighResolutionTime;
+  private executionDuration?: HighResolutionTime;
 
   private resolverCalls: ResolverCall[] = [];
 
@@ -48,7 +56,20 @@ export class TracingExtension<TContext = any>
     this.startHrTime = process.hrtime();
   }
 
-  executionDidStart() {}
+  calculationDidStart() {
+    this.calcStartOffset = process.hrtime(this.startHrTime)
+  }
+  calculationDidEnd() {
+    this.calcDuration = process.hrtime(this.calcStartOffset);
+  }
+
+  executionDidStart() {
+    this.executionStartOffset = process.hrtime(this.startHrTime)
+  }
+  executionDidEnd() {
+    this.executionDuration = process.hrtime(this.executionStartOffset);
+  }
+
 
   willResolveField(
     _source: any,
@@ -91,7 +112,11 @@ export class TracingExtension<TContext = any>
     if (
       typeof this.startWallTime === "undefined" ||
       typeof this.endWallTime === "undefined" ||
-      typeof this.duration === "undefined"
+      typeof this.duration === "undefined" ||
+      typeof this.calcDuration === "undefined" ||
+      typeof this.calcStartOffset === "undefined" ||
+      typeof this.executiontartOffset === "undefined" ||
+      typeof this.executionDuration === "undefined"
     ) {
       return;
     }
@@ -103,8 +128,12 @@ export class TracingExtension<TContext = any>
         startTime: this.startWallTime.toISOString(),
         endTime: this.endWallTime.toISOString(),
         duration: durationHrTimeToNanos(this.duration),
-        validation: durationHrTimeToNanos(this.duration),
+        calculation:  {
+          startOffset: durationHrTimeToNanos(this.calcStartOffset),
+          duration: durationHrTimeToNanos(this.calcDuration)
+        },
         execution: {
+          duration: durationHrTimeToNanos(this.executionDuration),
           resolvers: this.resolverCalls.map(resolverCall => {
             const startOffset = durationHrTimeToNanos(resolverCall.startOffset);
             const duration = resolverCall.endOffset
