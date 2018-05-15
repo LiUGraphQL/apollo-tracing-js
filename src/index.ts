@@ -45,9 +45,9 @@ export class TracingExtension<TContext = any>
   private startHrTime?: HighResolutionTime;
   private duration?: HighResolutionTime;
   private calcStartOffset?: HighResolutionTime;
-  private calcDuration?: HighResolutionTime;
+  private calcEndOffset?: HighResolutionTime;
   private executionStartOffset?: HighResolutionTime;
-  private executionDuration?: HighResolutionTime;
+  private executionEndOffset?: HighResolutionTime;
 
   private resolverCalls: ResolverCall[] = [];
 
@@ -57,17 +57,17 @@ export class TracingExtension<TContext = any>
   }
 
   calculationDidStart() {
-    this.calcStartOffset = process.hrtime(this.startHrTime)
+    this.calcStartOffset = process.hrtime(this.startHrTime);
   }
   calculationDidEnd() {
-    this.calcDuration = process.hrtime(this.calcStartOffset);
+    this.calcEndOffset = process.hrtime(this.startHrTime);
   }
 
   executionDidStart() {
-    this.executionStartOffset = process.hrtime(this.startHrTime)
+    this.executionStartOffset = process.hrtime(this.startHrTime);
   }
   executionDidEnd() {
-    this.executionDuration = process.hrtime(this.executionStartOffset);
+    this.executionEndOffset = process.hrtime(this.startHrTime);
   }
 
 
@@ -113,10 +113,10 @@ export class TracingExtension<TContext = any>
       typeof this.startWallTime === "undefined" ||
       typeof this.endWallTime === "undefined" ||
       typeof this.duration === "undefined" ||
-      typeof this.calcDuration === "undefined" ||
+      typeof this.calcEndOffset === "undefined" ||
       typeof this.calcStartOffset === "undefined" ||
       typeof this.executiontartOffset === "undefined" ||
-      typeof this.executionDuration === "undefined"
+      typeof this.executionEndOffset === "undefined"
     ) {
       return;
     }
@@ -130,10 +130,10 @@ export class TracingExtension<TContext = any>
         duration: durationHrTimeToNanos(this.duration),
         calculation:  {
           startOffset: durationHrTimeToNanos(this.calcStartOffset),
-          duration: durationHrTimeToNanos(this.calcDuration)
+          duration: (durationHrTimeToNanos(this.calcEndOffset) - durationHrTimeToNanos(this.calcStartOffset))
         },
         execution: {
-          duration: durationHrTimeToNanos(this.executionDuration),
+          duration: (durationHrTimeToNanos(this.executionEndOffset) - durationHrTimeToNanos(this.executionStartOffset)),
           resolvers: this.resolverCalls.map(resolverCall => {
             const startOffset = durationHrTimeToNanos(resolverCall.startOffset);
             const duration = resolverCall.endOffset
