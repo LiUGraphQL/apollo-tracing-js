@@ -1,25 +1,3 @@
-# Apollo Tracing (for Node.js)
+# apollo-tracing-js with graphql-result-size extension
 
-This package is used to collect and expose trace data in the [Apollo Tracing](https://github.com/apollographql/apollo-tracing) format.
-
-It relies on instrumenting a GraphQL schema to collect resolver timings, and exposes trace data for an individual request under `extensions` as part of the GraphQL response.
-
-This data can be consumed by [Apollo Engine](https://www.apollographql.com/engine/) or any other tool to provide visualization and history of field-by-field execution performance.
-
-## Usage
-
-### Apollo Server
-
-Apollo Server includes built-in support for tracing from version 1.1.0 onwards.
-
-The only code change required is to add `tracing: true` to the options passed to the Apollo Server middleware function for your framework of choice. For example, for Express:
-
-```javascript
-app.use('/graphql', bodyParser.json(), graphqlExpress({
-  schema,
-  context: {},
-  tracing: true,
-}));
-```
-
-> If you are using `express-graphql`, we recommend you switch to Apollo Server. Both `express-graphql` and Apollo Server are based on the [`graphql-js`](https://github.com/graphql/graphql-js) reference implementation, and switching should only require changing a few lines of code.
+An version of [apollo-tracing-js](https://github.com/apollographql/apollo-tracing-js) (v0.1.4) extended with support for timing of a prototypical result size calculation step (as implemented in [github:LiUGraphQL/graphql-result-size](https://github.com/LiUGraphQL/graphql-result-size)).
